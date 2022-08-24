@@ -1,0 +1,532 @@
+pip install selenium
+
+pip install pandas as pd
+
+pip install pygsheets
+pip install --upgrade google-api-python-client
+
+pip install numpy
+
+### OPENS THE SHEET ###
+### OPENS THE SHEET ###
+### OPENS THE SHEET ###
+import json
+import csv
+from google.oauth2 import service_account
+
+import pygsheets
+from oauth2client.service_account import ServiceAccountCredentials
+import pandas as pd
+import numpy as np
+
+with open('/Users/sumedhakethini/Documents/gs_credentials.json') as source:
+    info = json.load(source)
+credentials = service_account.Credentials.from_service_account_info(info)
+
+client = pygsheets.authorize(service_account_file='/Users/sumedhakethini/Documents/gs_credentials.json')
+
+sheet_data = client.sheet.get('1hj0iWUOmSPOnca4Ey20cpUxRyOjz2PNXP2vT8CzonA4')
+sheet = client.open_by_key('1hj0iWUOmSPOnca4Ey20cpUxRyOjz2PNXP2vT8CzonA4')
+wks = sheet.worksheet_by_title('Sheet1')
+
+
+df['Total_Points'] = df['Referral_Clicks'] + df['Insta_Posts'] + df['Insta_Stories']
+wks.set_dataframe(df, 'A1')
+wks.cell('A2').color = (.5,1.0,1,1.0)
+#(1.0,1.0,0.5,1.0) = yellow
+#(1,.7,.1,0) = orange
+#(.8,.7,1,0) = purple
+
+sheet = client.open_by_key('1QegpO-BjlGjdsP3_WyuU3jClLpMe7ZzOrBPbxFydpzw')
+formsheet = sheet.worksheet_by_title('Form Responses')
+
+all_values = formsheet.get_all_values(                           )
+#all_values = formsheet.get_values_batch([(None, '1'), (None, '2'), (None, '3'), (None, '4'), (None, '5')])
+#all_values = formsheet.get_values_batch([('1', None), ('2', None), ('3', None), ('4', None), ('5', None)])
+
+import pandas as pd
+#df = pd.DataFrame(all_values, columns = ['Full_Name', 'Email', 'Instagram', 'Rewards', 'Referral Link'])
+form = pd.DataFrame(all_values)
+form = form.drop(df.iloc[:, 8:13],axis = 1)
+form = form.drop(form.columns[[0, 5, 6]],axis = 1)
+form
+
+###MAKES DATAFRAME
+
+import pandas as pd
+import numpy as np
+
+data = {'Name': ['Kodi Elizabeth Coles ', 'Lily Griffith', 'Robert Chad Hochberg'],
+        'Usernames': ['kodi.coles', 'lilyyg23', 'ristrettoamericano'],
+        'Referral Links': ['bit.ly/3PnwdOq', 'bit.ly/3pbesHt', 'bit.ly/3dsmetO'],
+        'Insta_Posts': [0, 0, 0],
+        'Insta_Stories': [0, 0, 0],
+        'Referral_Clicks': [0, 0, 0],
+        'Total_Points': [0, 0, 0]
+        }
+
+df = pd.DataFrame(data)
+
+pip install schedule
+
+####MAIN METHOD####
+def all():
+    posts()
+    story()
+    bitly()
+    
+#SCHEDULE
+import schedule
+import time
+schedule.clear()
+schedule.every(1).seconds.do(all)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
+def posts():    
+    import datetime as dt
+    from datetime import timedelta
+
+    ### LOGS ONTO INSTA ###
+    from selenium import webdriver
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.wait import WebDriverWait
+    import time as t
+
+    driver = webdriver.Chrome("/Users/sumedhakethini/Documents/chromedriver")
+
+    driver.get("http://www.instagram.com")
+
+    username = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='username']")))
+    password = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='password']")))
+
+    username.clear()
+    username.send_keys("ambazify")
+    password.clear()
+    password.send_keys("#Ctwaa#SK6#")
+
+    log_in = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
+
+    t.sleep(2)
+    try:
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+    except:
+        t.sleep(2)
+        driver.get("http://www.instagram.com")
+        username = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='username']")))
+        password = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='password']")))
+        username.clear()
+        username.send_keys("ambazify")
+        password.clear()
+        password.send_keys("deletedmypasswordhere")
+        log_in = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+
+    searchbox = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@placeholder='Search']")))
+    searchbox.clear()
+
+    ######################################################################
+    ######################################################################
+
+    def posttimestamp():
+        import datetime as dt
+        from datetime import time 
+        from datetime import date
+        t.sleep(.2)
+        posttime = driver.find_elements(By.XPATH, '//time')
+        posttime = posttime[0].get_attribute("datetime")
+        posttime = posttime[0:4] + posttime[5:7] + posttime[8:10] + posttime[11:13] + posttime[14:16] + posttime[17:19] + posttime[20:23]
+        
+        yearstr = posttime[0:4]
+        monthstr = posttime[4:6]
+        datestr = posttime[6:8]
+        hourstr = posttime[8:10]
+        minstr = posttime[10:12]
+        secstr = posttime[12:14]
+
+        yearstr = int(yearstr)
+        monthstr = int(monthstr)
+        datestr = int(datestr)
+        hourstr = int(hourstr)
+        minstr = int(minstr)
+        secstr = int(secstr)
+        #d1 = datetime.datetime(posttime)
+        #print(d1)
+
+        # date in yyyy/mm/dd format
+        timeofpost = dt.datetime(yearstr, monthstr, datestr, hourstr, minstr, secstr)
+        return timeofpost
+
+    #######################################################################
+    ######################################################################
+    #GOES TO HASHTAG PAGE
+    try:
+        searchbox = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@placeholder='Search']")))
+        searchbox.clear()
+        searchbox.send_keys("#tabknits")
+
+        t.sleep(2)
+        searchbox.send_keys(Keys.RETURN)
+        searchbox.send_keys(Keys.RETURN)
+        t.sleep(5)
+    except:
+        driver.get("https://www.instagram.com/explore/tags/tabknits/")
+    uselessfollow = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Follow")]')))
+    SCROLL_PAUSE_TIME = 0.5
+
+    # Get scroll height
+    last_height = driver.execute_script("return document.body.scrollHeight")
+
+    while True:
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+        # Wait to load page
+        driver.implicitly_wait(SCROLL_PAUSE_TIME)
+
+        # Calculate new scroll height and compare with last scroll height
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
+
+    ######################################################################
+    ######################################################################
+    ### FIND POSTS, ADD POINTS ###
+    import datetime as dt
+    anchors = driver.find_elements(By.XPATH, '//a')
+    anchors = [a.get_attribute('href') for a in anchors]
+    anchors = [a for a in anchors if str(a).startswith("https://www.instagram.com/p/")]
+
+    usernames = []
+    for i in anchors:
+        driver.get(i)
+        driver.implicitly_wait(5)
+        try:
+            if posttimestamp() > lasttime:
+                possibleusers = driver.find_elements(By.XPATH, '//a')
+                for j in possibleusers:
+                    if j.text == "":
+                        pass
+                    else: 
+                        usernames.append(j.text)
+                        break
+        except:
+            if posttimestamp() > dt.datetime.now() - timedelta(hours = 6):
+                possibleusers = driver.find_elements(By.XPATH, '//a')
+                for j in possibleusers:
+                    if j.text == "":
+                        pass
+                    else: 
+                        usernames.append(j.text)
+                        break
+
+    #valueinpoints = input("How many points should ambassadors get for posting under this hashtag?")
+    for i in usernames:
+        usercount = 0
+        for j in df["Usernames"]:
+            if i == j:
+                current = df.iloc[usercount]["Insta_Posts"]
+                current = int(current)
+                #valueinpoints = int(valueinpoints)
+                current = int(current) + 30
+                df.at[usercount, "Insta_Posts"] = current
+            usercount += 1
+
+    lasttime = dt.datetime.now() 
+    
+    def story():
+    def storytimestamp():
+        import datetime as dt
+        from datetime import time as t
+        from datetime import date
+        from datetime import timedelta
+
+        posttime = driver.find_element(By.XPATH, "//time[@class='_ac0t']").get_attribute("datetime")
+        posttime = posttime[0:4] + posttime[5:7] + posttime[8:10] + posttime[11:13] + posttime[14:16] + posttime[17:19] + posttime[20:23]
+        
+        yearstr = posttime[0:4]
+        monthstr = posttime[4:6]
+        datestr = posttime[6:8]
+        hourstr = posttime[8:10]
+        minstr = posttime[10:12]
+        secstr = posttime[12:14]
+
+        yearstr = int(yearstr)
+        monthstr = int(monthstr)
+        datestr = int(datestr)
+        hourstr = int(hourstr)
+        minstr = int(minstr)
+        secstr = int(secstr)
+        #d1 = datetime.datetime(posttime)
+        #print(d1)
+
+        # date in yyyy/mm/dd format
+        storytime = dt.datetime(yearstr, monthstr, datestr, hourstr, minstr, secstr)
+        return storytime
+
+    def onestory():
+        import time as t
+        import datetime as dt
+        from datetime import time
+        from datetime import timedelta
+
+        playb = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button._abl-'))).click()
+        driver.implicitly_wait(4)
+        tag = driver.find_elements(By.XPATH, "//div[@class = '_abw-']")
+        tag.append(driver.find_elements(By.XPATH, "//div[@class = '_abw- _abw_']"))
+        t.sleep(.5)
+        playb = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button._abl-'))).click()
+        driver.implicitly_wait(4)
+        if tag != []:
+            try:
+                if storytimestamp() > lasttime:
+                    if tag == []:
+                        pass
+                    elif type(tag) == list:
+                        for i in tag:
+                            try:
+                                i.click()
+                                tagname = driver.find_element(By.CLASS_NAME, "_aabb")
+                                try:
+                                    innerh = tagname.get_attribute("innerHTML")
+                                except:
+                                    pass
+                                if innerh == "All Day Running Company" or innerh == "Manuela Mendoza" or innerh == "manumendozaaa" or innerh == "Sara Blakely":
+                                    tagelement = driver.find_elements(By.XPATH, "//a")
+                                    for j in tagelement:
+                                        if j.text == "":
+                                            pass
+                                        else: 
+                                            postedamb = (j.text)
+                                            print(postedamb)
+                                            break
+                                    usercount = 0
+                                    for j in df["Usernames"]:
+                                        if postedamb == j:
+                                            current = df.iloc[usercount]["Insta_Stories"]
+                                            newpoint = int(current) + 15
+                                            df.at[usercount, "Insta_Stories"] = newpoint
+                                        usercount += 1
+                                else:
+                                    pass
+                            except:
+                                pass
+                    else:
+                        try:
+                            tag.click()
+                            tagname = driver.find_element(By.CLASS_NAME, "_aabb")
+                            try:
+                                innerh = tagname.get_attribute("innerHTML")
+                            except:
+                                pass
+                            if innerh == "All Day Running Company" or innerh == "Sara Blakely" or innerh == "eva" or innerh == "Skylite Musicals 2022":
+                                tagelement = driver.find_element(By.XPATH, "//a")
+                                for j in tagelement:
+                                    if j.text == "":
+                                        pass
+                                    else: 
+                                        postedamb = (j.text)
+                                        print(postedamb)
+                                        break
+                                usercount = 0
+                                for j in df["Usernames"]:
+                                    if postedamb == j:
+                                        current = df.iloc[usercount]["Insta_Stories"]
+                                        newpoint = int(current) + 15
+                                        df.at[usercount, "Insta_Stories"] = newpoint
+                                    usercount += 1
+                            else:
+                                pass            
+                        except:
+                            pass
+            except: ################
+                if storytimestamp() > dt.datetime.now() - timedelta(hours = 6):
+                    if tag == []:
+                        pass
+                    elif type(tag) == list:
+                        for i in tag:
+                            try:
+                                i.click()
+                                tagname = driver.find_element(By.CLASS_NAME, "_aabb")
+                                try:
+                                    innerh = tagname.get_attribute("innerHTML")
+                                except:
+                                    pass
+                                if innerh == "All Day Running Company" or innerh == "Manuela Mendoza" or innerh == "manumendozaaa" or innerh == "Sara Blakely":
+                                    tagelement = driver.find_elements(By.XPATH, "//a")
+                                    for j in tagelement:
+                                        if j.text == "":
+                                            pass
+                                        else: 
+                                            postedamb = (j.text)
+                                            print(postedamb)
+                                            break
+                                    usercount = 0
+                                    for j in df["Usernames"]:
+                                        if postedamb == j:
+                                            current = df.iloc[usercount]["Insta_Stories"]
+                                            newpoint = int(current) + 15
+                                            df.at[usercount, "Insta_Stories"] = newpoint
+                                        usercount += 1
+                                else:
+                                    pass
+                            except:
+                                pass
+                    else:
+                        try:
+                            tag.click()
+                            tagname = driver.find_element(By.CLASS_NAME, "_aabb")
+                            try:
+                                innerh = tagname.get_attribute("innerHTML")
+                            except:
+                                pass
+                            if innerh == "All Day Running Company" or innerh == "Sara Blakely" or innerh == "eva" or innerh == "Skylite Musicals 2022":
+                                tagelement = driver.find_element(By.XPATH, "//a")
+                                for j in tagelement:
+                                    if j.text == "":
+                                        pass
+                                    else: 
+                                        postedamb = (j.text)
+                                        print(postedamb)
+                                        break
+                                usercount = 0
+                                for j in df["Usernames"]:
+                                    if postedamb == j:
+                                        current = df.iloc[usercount]["Insta_Stories"]
+                                        newpoint = int(current) + 15
+                                        df.at[usercount, "Insta_Stories"] = newpoint
+                                    usercount += 1
+                            else:
+                                pass            
+                        except:
+                            pass
+
+            next = driver.find_element(By.CSS_SELECTOR, 'button._ac0d')
+            next.click()
+        elif tag == []:
+            next = driver.find_element(By.CSS_SELECTOR, 'button._ac0d')
+            next.click()
+
+    #LOGS INTO INSTA, RUNS THE ACTUAL STORIES
+    import datetime as dt
+
+    from selenium import webdriver
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.wait import WebDriverWait
+    import time as t
+
+    driver = webdriver.Chrome("/Users/sumedhakethini/Documents/chromedriver")
+
+    driver.get("http://www.instagram.com")
+
+    username = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='username']")))
+    password = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='password']")))
+
+    username.clear()
+    t.sleep(.2)
+    username.send_keys("ambazify")
+    password.clear()
+    t.sleep(.3)
+    password.send_keys("deleted password")
+    log_in = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
+
+
+#######################
+    try:
+        t.sleep(2)
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+
+    except:
+        t.sleep(2)
+        driver.get("http://www.instagram.com")
+        t.sleep(.5)
+        username = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='username']")))
+        password = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='password']")))
+        username.clear()
+        t.sleep(.2)
+        username.send_keys("ambazify")
+        password.clear()
+        password.send_keys("deleted password")
+        log_in = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
+
+
+        t.sleep(2)
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+        alert = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, '//button[contains(text(), "Not Now")]'))).click()
+
+
+    t.sleep(3)
+    #firststory = driver.find_elements(By.CLASS_NAME, '_aam8')
+    firststory = driver.find_elements(By.CSS_SELECTOR, "button[class='_aam8']")
+    if type(firststory) == list:
+        try:
+            firststory[0].click()
+        except:
+            firststory.click()
+    else: 
+        try:
+            firststory.click()
+        except:
+            pass
+    t.sleep(1)
+
+    onestory()
+    for i in range(10000):
+        onestory()
+        if driver.current_url == "https://www.instagram.com/":
+            break
+
+    lasttime = dt.datetime.now()
+    
+    def bitly():    
+    #LOGS INTO BITLY
+    from selenium import webdriver
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.wait import WebDriverWait
+    import time as t
+
+    driver = webdriver.Chrome("/Users/sumedhakethini/Documents/chromedriver")
+
+    driver.get("https://bitly.com/a/sign_in/")
+    bitmyuser = driver.find_elements(By.CSS_SELECTOR, "input[name='username']")
+    bitmypass = driver.find_elements(By.CSS_SELECTOR, "input[name='password']")
+
+    bitmyuser[1].click()
+    bitmyuser[1].clear()
+    bitmyuser[1].send_keys("ambazify@gmail.com")
+    bitmypass[1].click()
+    bitmypass[1].send_keys("#Ctwaa#SK6#")
+    bitlog = driver.find_element(By.XPATH, "//input[@value = 'Log in']")
+    bitlog.click()
+
+    #UPDATES BITLY POINTS
+    t.sleep(5)
+    fakefilter = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[class='orb-button']")))
+
+    df["Referral_Clicks"].values[:] = 0
+    bitlinkitem = driver.find_elements(By.XPATH, "//a[@class='bitlink-item--ACTIVE']")
+    bitlinkitem.extend(driver.find_elements(By.XPATH, "//a[@class='bitlink-item--MAIN']"))
+    for i in bitlinkitem:
+        bitlink = i.find_element(By.CSS_SELECTOR, "div[class='bitlink--MAIN']")
+        bitlink = bitlink.get_attribute("title")
+        usercount = 0
+        for j in df["Referral Links"]:
+            if j == bitlink:
+                linkct = i.find_element(By.CSS_SELECTOR, "span[class='click-count--MAIN']")
+                linkct = linkct.text
+                linkct = int(linkct)
+                df.at[usercount, "Referral_Clicks"] = linkct
+            usercount += 1
+    print(bitlinkitem)
